@@ -137,6 +137,69 @@ define([
         FAILED : 3
     };
 
+    var defaultMaterial = {
+        values : {
+            emission : [
+                0.8,
+                0.8,
+                0.8,
+                1.0
+            ]
+        }
+    };
+
+    var defaultTechnique = {
+        attributes : {
+            a_position : 'position'
+        },
+        parameters : {
+            modelViewMatrix : {
+                semantic : 'MODELVIEW',
+                type : WebGLConstants.FLOAT_MAT4
+            },
+            projectionMatrix : {
+                semantic : 'PROJECTION',
+                type : WebGLConstants.FLOAT_MAT4
+            },
+            emission : {
+                type : WebGLConstants.FLOAT_VEC4
+            },
+            position : {
+                semantic : 'POSITION',
+                type : WebGLConstants.FLOAT_VEC3
+            }
+        },
+        states : {
+            enable : [
+                WebGLConstants.CULL_FACE,
+                WebGLConstants.DEPTH_TEST
+            ]
+        },
+        uniforms : {
+            u_modelViewMatrix : 'modelViewMatrix',
+            u_projectionMatrix : 'projectionMatrix',
+            u_emission : 'emission'
+        }
+    };
+
+    var defaultProgram = {
+        attributes : ['a_position']
+    };
+
+    var defaultVertexShader = 'precision highp float;\n\n' +
+                              'uniform mat4 u_modelViewMatrix;\n' +
+                              'uniform mat4 u_projectionMatrix;\n\n' +
+                              'attribute vec3 a_position;\n\n' +
+                              'void main(void) {\n' +
+                              '    gl_Position = u_projectionMatrix * u_modelViewMatrix * vec4(a_position, 1.0);\n' +
+                              '}\n';
+
+    var defaultFragmentShader = 'precision highp float;\n\n' +
+                                'uniform vec4 u_emission;\n\n' +
+                                'void main(void) {\n' +
+                                '    gl_FragColor = u_emission;\n' +
+                                '}\n';
+
     // GLTF_SPEC: Figure out correct mime types (https://github.com/KhronosGroup/glTF/issues/412)
     var defaultModelAccept = 'model/vnd.gltf.binary,model/vnd.gltf+json,model/gltf.binary,model/gltf+json;q=0.8,application/json;q=0.2,*/*;q=0.01';
 
@@ -1248,6 +1311,65 @@ define([
         };
     }
 
+    function initializeDefaultMaterial(model) {
+        var gltf = model.gltf;
+        var materials = defaultValue(gltf.materials, {});
+        gltf.materials = materials;
+        var meshes = defaultValue(gltf.meshes, {});
+        var programs = defaultValue(gltf.programs, {});
+        gltf.programs = programs;
+        var techniques = defaultValue(gltf.techniques, {});
+        gltf.techniques = techniques;
+        var shaders = defaultValue(gltf.shaders, {});
+        gltf.shaders = shaders;
+        var initialized = false;
+        var defaultMaterialId = 'czm_gltf_default_material';
+        var defaultTechniqueId = 'czm_gltf_default_technique';
+        var defaultProgramId = 'czm_gltf_default_program';
+        var defaultVertexShaderId = 'czm_gltf_default_VS';
+        var defaultFragmentShaderId = 'czm_gltf_default_FS';
+        for (var meshId in meshes) {
+            if (meshes.hasOwnProperty(meshId)) {
+                var mesh = meshes[meshId];
+                var primitives = mesh.primitives;
+                var primitivesLength = primitives.length;
+                for (var i = 0; i < primitivesLength; i++) {
+                    var primitive = primitives[i];
+                    var materialId = primitive.material;
+                    if (!defined(materialId)) {
+                        if (!initialized) {
+                            // Load the default material
+                            mesh.material = defaultMaterialId;
+                            var material = clone(defaultMaterial);
+                            material.technique = defaultTechniqueId;
+                            materials[defaultMaterialId] = material;
+                            var technique = clone(defaultTechnique);
+                            technique.program = defaultProgramId;
+                            techniques[defaultTechniqueId] = technique;
+                            var program = clone(defaultProgram);
+                            program.vertexShader = defaultVertexShaderId;
+                            program.fragmentShader = defaultFragmentShaderId;
+                            programs[defaultProgramId] = program;
+                            shaders[defaultVertexShaderId] = {
+                                type : WebGLConstants.VERTEX_SHADER,
+                                extras : {
+                                    source : defaultVertexShader
+                                }
+                            };
+                            shaders[defaultFragmentShaderId] = {
+                                type : WebGLConstants.FRAGMENT_SHADER,
+                                extras : {
+                                    source : defaultFragmentShader
+                                }
+                            };
+                        }
+                        primitive.material = defaultMaterialId;
+                    }
+                }
+            }
+        }
+    }
+
     function parseBuffers(model) {
         var buffers = model.gltf.buffers;
         for (var id in buffers) {
@@ -1506,6 +1628,7 @@ define([
     }
 
     function parse(model) {
+        initializeDefaultMaterial(model);
         if (!model._loadRendererResourcesFromCache) {
             parseBuffers(model);
             parseBufferViews(model);
