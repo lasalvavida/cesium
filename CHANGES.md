@@ -20,6 +20,7 @@ Change Log
 * Added support for the glTF 1.0.1 `accessor.normalized` property. [#4247](https://github.com/AnalyticalGraphicsInc/cesium/pull/4247)
 * Removed `SCISSOR_TEST` from `Model` as a valid render state for glTF 1.0.1. [#4248](https://github.com/AnalyticalGraphicsInc/cesium/pull/4248)
 * Added uint32 indices support for glTF 1.0.1. [#4249](https://github.com/AnalyticalGraphicsInc/cesium/pull/4249)
+* Added default material support for glTF 1.0.1. [#4251](https://github.com/AnalyticalGraphicsInc/cesium/pull/4251)
 
 ### 1.24 - 2016-08-01
 
