@@ -88,6 +88,7 @@ defineSuite([
     var boxSpotLightUrl = './Data/Models/MaterialsCommon/BoxSpotLight.gltf';
     var boxTransparentUrl = './Data/Models/MaterialsCommon/BoxTransparent.gltf';
     var boxColorUrl = './Data/Models/Box-Color/Box-Color.gltf';
+    var boxUint32Indices = './Data/Models/Box-Uint32Indices/Box-Uint32Indices.gltf';
     var boxQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Quantized.gltf';
     var boxNormalizedQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Normalized-Quantized.gltf';
     var boxColorQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Color-Quantized.gltf';
@@ -1659,6 +1660,13 @@ defineSuite([
              testBoxSideColors(m);
              primitives.remove(m);
          });
+    });
+
+    it('loads a gltf with uint32 indices', function() {
+        return loadModel(boxUint32Indices).then(function(m) {
+            verifyRender(m);
+            primitives.remove(m);
+        });
     });
 
     it('loads a gltf with WEB3D_quantized_attributes COLOR', function() {

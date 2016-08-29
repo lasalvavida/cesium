@@ -1533,6 +1533,17 @@ define([
 
     ///////////////////////////////////////////////////////////////////////////
 
+    function loadGLExtensions(model, context) {
+        var glExtensionsUsed = model.gltf.glExtensionsUsed;
+        if (defined(glExtensionsUsed)) {
+            var gl = context._gl;
+            var glExtensionsUsedLength = glExtensionsUsed.length;
+            for (var i = 0; i < glExtensionsUsedLength; i++) {
+                gl.getExtension(glExtensionsUsed[i]);
+            }
+        }
+    }
+
     function createBuffers(model, context) {
         var loadResources = model._loadResources;
 
@@ -3114,6 +3125,7 @@ define([
     function createResources(model, frameState) {
         var context = frameState.context;
         var scene3DOnly = frameState.scene3DOnly;
+        loadGLExtensions(model, context);
 
         if (model._loadRendererResourcesFromCache) {
             var resources = model._rendererResources;
