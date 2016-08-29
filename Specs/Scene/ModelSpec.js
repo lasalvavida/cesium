@@ -89,6 +89,7 @@ defineSuite([
     var boxTransparentUrl = './Data/Models/MaterialsCommon/BoxTransparent.gltf';
     var boxColorUrl = './Data/Models/Box-Color/Box-Color.gltf';
     var boxQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Quantized.gltf';
+    var boxNormalizedQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Normalized-Quantized.gltf';
     var boxColorQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Color-Quantized.gltf';
     var boxScalarQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/Box-Scalar-Quantized.gltf';
     var milkTruckQuantizedUrl = './Data/Models/WEB3DQuantizedAttributes/CesiumMilkTruck-Quantized.gltf';
@@ -1593,6 +1594,13 @@ defineSuite([
 
     it('loads a glTF with WEB3D_quantized_attributes POSITION and NORMAL', function() {
         return loadModel(boxQuantizedUrl).then(function(m) {
+            verifyRender(m);
+            primitives.remove(m);
+        });
+    });
+
+    it('loads a glTF with WEB3D_quantized_attributes and accessor.normalized for higher precision decode matrix', function() {
+        return loadModel(boxNormalizedQuantizedUrl).then(function(m) {
             verifyRender(m);
             primitives.remove(m);
         });
