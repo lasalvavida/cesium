@@ -17,6 +17,7 @@ Change Log
 * Added `GeocoderViewModel.keepExpanded` which when set to true will always keep the GeoCoder in its expanded state.
 * Added support for `INT` and `UNSIGNED_INT` in `ComponentDatatype`.
 * Added `ComponentDatatype.fromName` for getting a `ComponentDatatype` from its name.
+* Added support for the glTF 1.0.1 `accessor.normalized` property. [#4247](https://github.com/AnalyticalGraphicsInc/cesium/pull/4247)
 
 ### 1.24 - 2016-08-01
 
