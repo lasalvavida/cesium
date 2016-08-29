@@ -18,7 +18,7 @@ Change Log
 * Added support for `INT` and `UNSIGNED_INT` in `ComponentDatatype`.
 * Added `ComponentDatatype.fromName` for getting a `ComponentDatatype` from its name.
 * Added support for the glTF 1.0.1 `accessor.normalized` property. [#4247](https://github.com/AnalyticalGraphicsInc/cesium/pull/4247)
-* Removed `SCISSOR_TEST` from `Model` as a valid render state. [#4248](https://github.com/AnalyticalGraphicsInc/cesium/pull/4248)
+* Removed `SCISSOR_TEST` from `Model` as a valid render state for glTF 1.0.1. [#4248](https://github.com/AnalyticalGraphicsInc/cesium/pull/4248)
 
 ### 1.24 - 2016-08-01
 
