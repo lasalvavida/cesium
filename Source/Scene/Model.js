@@ -2207,15 +2207,20 @@ define([
         for (var id in skins) {
             if (skins.hasOwnProperty(id)) {
                 var skin = skins[id];
-                var accessor = accessors[skin.inverseBindMatrices];
 
                 var bindShapeMatrix;
                 if (!Matrix4.equals(skin.bindShapeMatrix, Matrix4.IDENTITY)) {
                     bindShapeMatrix = Matrix4.clone(skin.bindShapeMatrix);
                 }
 
+                var inverseBindMatrices;
+                if (defined(skin.inverseBindMatrices)) {
+                    var accessor = accessors[skin.inverseBindMatrices];
+                    inverseBindMatrices = ModelAnimationCache.getSkinInverseBindMatrices(model, accessor);
+                }
+
                 runtimeSkins[id] = {
-                    inverseBindMatrices : ModelAnimationCache.getSkinInverseBindMatrices(model, accessor),
+                    inverseBindMatrices : inverseBindMatrices,
                     bindShapeMatrix : bindShapeMatrix // not used when undefined
                 };
             }
@@ -3421,17 +3426,22 @@ define([
 
             var computedJointMatrices = node.computedJointMatrices;
             var joints = node.joints;
+            var jointsLength = joints.length;
             var bindShapeMatrix = node.bindShapeMatrix;
             var inverseBindMatrices = node.inverseBindMatrices;
-            var inverseBindMatricesLength = inverseBindMatrices.length;
 
-            for (var m = 0; m < inverseBindMatricesLength; ++m) {
+            for (var m = 0; m < jointsLength; ++m) {
                 // [joint-matrix] = [node-to-root^-1][joint-to-root][inverse-bind][bind-shape]
                 if (!defined(computedJointMatrices[m])) {
                     computedJointMatrices[m] = new Matrix4();
                 }
+                // inverseBindMatrix is optional because it can be pre-applied; if it is undefined, default to the identity
+                var inverseBindMatrix = Matrix4.IDENTITY;
+                if (defined(inverseBindMatrices)) {
+                    inverseBindMatrix = inverseBindMatrices[m];
+                }
                 computedJointMatrices[m] = Matrix4.multiplyTransformation(scratchObjectSpace, joints[m].transformToRoot, computedJointMatrices[m]);
-                computedJointMatrices[m] = Matrix4.multiplyTransformation(computedJointMatrices[m], inverseBindMatrices[m], computedJointMatrices[m]);
+                computedJointMatrices[m] = Matrix4.multiplyTransformation(computedJointMatrices[m], inverseBindMatrix, computedJointMatrices[m]);
                 if (defined(bindShapeMatrix)) {
                     // Optimization for when bind shape matrix is the identity.
                     computedJointMatrices[m] = Matrix4.multiplyTransformation(computedJointMatrices[m], bindShapeMatrix, computedJointMatrices[m]);
