@@ -1207,6 +1207,17 @@ defineSuite([
         });
     });
 
+    it('renders riggedSimple when inverseBindMatrices is undefined', function() {
+        return loadModel(riggedSimpleUrl).then(function(m) {
+            var gltf = m.gltf;
+            delete gltf.skins['Armature_Cylinder-skin'].inverseBindMatrices;
+            return loadModelJson(gltf).then(function(m) {
+                expect(m).toBeDefined();
+                verifyRender(m);
+            });
+        });
+    });
+
     it('should load a model where WebGL shader optimizer removes an attribute (linux)', function() {
         var url = './Data/Models/test-shader-optimize/test-shader-optimize.gltf';
         return loadModel(url).then(function(m) {
